@@ -6,6 +6,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "button.h"
+
 #define BUFF_SIZE 256
 
 void print_buffer(uint8_t* buffer, size_t size)
