@@ -1,20 +1,22 @@
 #include <chrono>
 #include <iostream>
 
-#define DELAY_FAST 0.2
-#define DELAY_SLOW 0.5
+// activation delay in ms
+#define DELAY_FAST 200
+#define DELAY_SLOW 500
 
 class button
 {
 public:
-    button(double d)
+    button(unsigned int d)
     : timestamp(std::chrono::system_clock::now()),
-      delay((std::chrono::duration<double>)d)
+      delay(std::chrono::milliseconds(d))
     {}
 
     bool check_delay()
     {
-        return std::chrono::system_clock::now() - timestamp > delay;
+        std::chrono::duration<double> diff = std::chrono::system_clock::now() - timestamp;
+        return diff > delay;
     }
 
     void update_timestamp()
