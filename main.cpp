@@ -52,14 +52,18 @@ int main()
                             }
                             case 0x61 :
                             { // possibly plus
-                                for (int i=0; i<2; ++i)
-                                {
-                                    bytes = read(device, &buff, 1);
-                                    if (bytes <= 0){std::cout << "ERROR read 0 bytes\n"; break;}
-                                    if (buff != 0x63) break;
-                                }
+//                                bytes = read(device, &buff, 1);
+//                                if (bytes <= 0){std::cout << "ERROR read 0 bytes\n"; break;}
+//                                if (buff != 0x63) break;
+//                                bytes = read(device, &buff, 1);
+//                                if (bytes <= 0){std::cout << "ERROR read 0 bytes\n"; break;}
+//                                if (buff != 0x63) break;
                                 std::cout << "+";
                                 break;
+                            }
+                            default:
+                            {
+                                std::cout << "\nfound 0x61 0x61 0x"<<std::hex<<(unsigned int)buff<<std::endl;
                             }
                         }
                     }
@@ -93,6 +97,10 @@ int main()
                     if (bytes <= 0){std::cout << "ERROR read 0 bytes\n"; break;}
                     if (buff != 0x63) break;
                     std::cout << "r";
+                    break;
+                }
+                case 0x00 :
+                {
                     break;
                 }
                 default :
