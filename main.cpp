@@ -5,12 +5,14 @@
 #include <iostream>
 #include <unistd.h> // read, close
 
+#include "wheel.h"
+
 bool running = true;
-size_t err_num = 0;
+int err_code = 0;
 
 void sigint_handler(int signum)
 {
-    err_num = signum;
+    err_code = signum;
     running = false;
 }
 
@@ -22,6 +24,7 @@ int main()
     std::string port = "/dev/ttyS8";
     int device = open(port.c_str(), O_RDONLY | O_NOCTTY);
 
+    wheel w;
     uint8_t buff;
     int bytes = 0;
     while (running)
@@ -42,7 +45,7 @@ int main()
                     bytes = read(device, &buff, 1);
                     if (bytes <= 0) break;
                     if (buff == 0x7f)
-                        std::cout << "p";
+                        w.power.event();
                     break;
                 }
                 case 0xa3 :
@@ -54,7 +57,7 @@ int main()
                         if (bytes <= 0){std::cout<<"read error"<<std::endl; break;}
                         if (buff != 0xa3) break;
                         if (i == 2)
-                            std::cout << "-";
+                            w.minus.event();
                     }
                     break;
                 }
@@ -65,9 +68,9 @@ int main()
                     bytes = read(device, &buff, 1);
                     if (bytes <= 0){std::cout<<"read error"<<std::endl; break;}
                     if (buff == 0x3f)
-                        std::cout << "r";
+                        w.reset.event();
                     else if (buff == 0x61)
-                        std::cout << "+";
+                        w.plus.event();
                     break;
                 }
                 case 0x3f :
@@ -76,7 +79,7 @@ int main()
                     bytes = read(device, &buff, 1);
                     if (bytes <= 0){std::cout<<"read error"<<std::endl; break;}
                     if (buff == 0x63)
-                        std::cout << "r";
+                        w.reset.event();
                     break;
                 }
                 default :
@@ -92,5 +95,5 @@ int main()
 
     close(device);
 
-    return err_num;
+    return err_code;
 }
