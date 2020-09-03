@@ -38,36 +38,11 @@ int main()
                 }
                 case 0x61 :
                 {
-                    //6161 6363 7f : plus
-                    //617f : on/off
+                    // 617f : power on/off
                     bytes = read(device, &buff, 1);
-                    if (bytes <= 0){std::cout<<"read error"<<std::endl; break;}
-                    switch (buff)
-                    {
-                        case 0x7f :
-                        { // power on/off
-                            std::cout << "p";
-                            break;
-                        }
-//TODO DEBUG
-                        case 0x63 :
-                        case 0x61 :
-                        { // possibly plus
-//                            bytes = read(device, &buff, 1);
-//                            if (bytes <= 0){std::cout << "ERROR read 0 bytes\n"; break;}
-//                            if (buff != 0x63) break;
-//                            bytes = read(device, &buff, 1);
-//                            if (bytes <= 0){std::cout << "ERROR read 0 bytes\n"; break;}
-//                            if (buff != 0x63) break;
-                            std::cout << "+";
-                            break;
-                        }
-                        default:
-                        {
-                            std::cout<<" found 0x61 0x"<<std::hex<<(unsigned int)buff<<std::endl;
-                            break;
-                        }
-                    }
+                    if (bytes <= 0) break;
+                    if (buff == 0x7f)
+                        std::cout << "p";
                     break;
                 }
                 case 0xa3 :
@@ -78,17 +53,21 @@ int main()
                         bytes = read(device, &buff, 1);
                         if (bytes <= 0){std::cout<<"read error"<<std::endl; break;}
                         if (buff != 0xa3) break;
-                        if (i == 2) std::cout << "-";
+                        if (i == 2)
+                            std::cout << "-";
                     }
                     break;
                 }
                 case 0x63 :
                 {
                     // 633f : reset
+                    // 6161 6363 7f : plus
                     bytes = read(device, &buff, 1);
                     if (bytes <= 0){std::cout<<"read error"<<std::endl; break;}
-                    if (buff != 0x3f) break;
-                    std::cout << "r";
+                    if (buff == 0x3f)
+                        std::cout << "r";
+                    else if (buff == 0x61)
+                        std::cout << "+";
                     break;
                 }
                 case 0x3f :
@@ -96,8 +75,8 @@ int main()
                     // 3f63 : reset
                     bytes = read(device, &buff, 1);
                     if (bytes <= 0){std::cout<<"read error"<<std::endl; break;}
-                    if (buff != 0x63) break;
-                    std::cout << "r";
+                    if (buff == 0x63)
+                        std::cout << "r";
                     break;
                 }
                 default :
