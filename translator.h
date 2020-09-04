@@ -75,7 +75,7 @@ public:
     {
         if (check_delay())
         {
-            powerstate != powerstate;
+            powerstate = !powerstate;
             if (powerstate)
             {
                 update_timestamp();
@@ -135,7 +135,7 @@ public:
             }
             case read_event::unknown :
             {
-                std::cout << "Warning: read unknown symbol" << std::endl;
+//                std::cout << "Warning: read unknown symbol" << std::endl;
                 return write_event::noop;
             }
         }
