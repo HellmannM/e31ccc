@@ -1,6 +1,8 @@
 #include <chrono>
 #include <iostream>
 
+#include "event.h"
+
 // activation delay in ms
 #define DELAY_FAST 200
 #define DELAY_SLOW 500
@@ -24,7 +26,7 @@ public:
         timestamp = std::chrono::system_clock::now();
     }
 
-    virtual void event() = 0;
+    virtual write_event process() = 0;
  
 private:
     std::chrono::time_point<std::chrono::system_clock> timestamp;
@@ -36,13 +38,14 @@ class button_plus : public button
 public:
     button_plus() : button(DELAY_FAST) {}
 
-    void event()
+    write_event process()
     {
         if (check_delay())
         {
-            std::cout << '+' << std::endl;
             update_timestamp();
+            return write_event::plus;
         }
+        return write_event::noop;
     }
 };
 
@@ -51,13 +54,14 @@ class button_minus : public button
 public:
     button_minus() : button(DELAY_FAST) {}
 
-    void event()
+    write_event process()
     {
         if (check_delay())
         {
-            std::cout << '-' << std::endl;
             update_timestamp();
+            return write_event::minus;
         }
+        return write_event::noop;
     }
 };
 
@@ -67,17 +71,23 @@ public:
     button_power()
     : button(DELAY_SLOW), powerstate(false) {}
 
-    void event()
+    write_event process()
     {
         if (check_delay())
         {
             powerstate != powerstate;
             if (powerstate)
-                std::cout << "p-on" << std::endl;
+            {
+                update_timestamp();
+                return write_event::poweron;
+            }
             else
-                std::cout << "p-off" << std::endl;
-            update_timestamp();
+            {
+                update_timestamp();
+                return write_event::poweroff;
+            }
         }
+        return write_event::noop;
     }
 
 private:
@@ -90,18 +100,49 @@ public:
     button_reset()
     : button(DELAY_SLOW) {}
 
-    void event()
+    write_event process()
     {
         if (check_delay())
         {
-            std::cout << 'r' << std::endl;
             update_timestamp();
+            return write_event::reset;
         }
+        return write_event::noop;
     }
 };
 
-struct wheel
+class event_handler
 {
+public:
+    write_event process(read_event e)
+    {
+        switch (e)
+        {
+            case read_event::noop :
+                return write_event::noop;
+            case read_event::power :
+                return power.process();
+            case read_event::reset :
+                return reset.process();
+            case read_event::plus :
+                return plus.process();
+            case read_event::minus :
+                return minus.process();
+            case read_event::error :
+            {
+                std::cout << "ERROR: couldn't read input stream" << std::endl;
+                return write_event::noop;
+            }
+            case read_event::unknown :
+            {
+                std::cout << "Warning: read unknown symbol" << std::endl;
+                return write_event::noop;
+            }
+        }
+        return write_event::noop; // should be unreachable
+    }
+
+private:
     button_plus plus;
     button_minus minus;
     button_power power;
