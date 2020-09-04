@@ -1,6 +1,5 @@
 #include <cstdint>
 #include <csignal> // SIGINT
-#include <fcntl.h> // O_RDONLY, O_NOCTTY
 #include <iomanip>
 #include <iostream>
 
@@ -20,13 +19,11 @@ void sigint_handler(int signum)
 
 int main()
 {
-    // set signal callback
+    // set SIGINT signal callback
     signal(SIGINT, sigint_handler);
 
-    std::string port = "/dev/ttyS8";
-    int device = open(port.c_str(), O_RDONLY | O_NOCTTY);
-
-    input_stream input(device);
+    std::string fd = "/dev/ttyS8";
+    input_stream input(fd);
     event_handler h;
     output_stream output;
 

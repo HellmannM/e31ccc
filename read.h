@@ -1,4 +1,7 @@
 #include <cstdint> // uint8_t
+#include <fcntl.h> // O_RDONLY, O_NOCTTY
+#include <sys/types.h> // open
+#include <sys/stat.h> // open
 #include <unistd.h> // read, close
 
 #include "event.h"
@@ -6,8 +9,8 @@
 class input_stream
 {
 public:
-    input_stream(int& d)
-    : device(d) {}
+    input_stream(std::string& fd)
+    : device(open(fd.c_str(), O_RDONLY | O_NOCTTY)) {}
 
     ~input_stream()
     {
