@@ -67,7 +67,7 @@ public:
                 case 0x63 :
                     {
                         // 633f : reset
-                        // 6161 6363 7f : plus
+                        // 6361 7f : plus
                         bytes = read(device, &buff, 1);
                         if (bytes <= 0)
                             return read_event::error;
@@ -89,26 +89,26 @@ public:
                             return read_event::plus;
                         return read_event::unknown;
                     }
-                case 0x3f :
-                    {
-                        // 3f63 : reset
-                        bytes = read(device, &buff, 1);
-                        if (bytes <= 0)
-                            return read_event::error;
-                        if (buff != 0x63)
-                            return read_event::unknown;
-                        bytes = read(device, &buff, 1);
-                        if (bytes <= 0)
-                            return read_event::error;
-                        if (buff != 0x3f)
-                            return read_event::unknown;
-                        bytes = read(device, &buff, 1);
-                        if (bytes <= 0)
-                            return read_event::error;
-                        if (buff != 0x63)
-                            return read_event::unknown;
-                        return read_event::reset;
-                    }
+//                case 0x3f :
+//                    {
+//                        // 3f63 : reset
+//                        bytes = read(device, &buff, 1);
+//                        if (bytes <= 0)
+//                            return read_event::error;
+//                        if (buff != 0x63)
+//                            return read_event::unknown;
+//                        bytes = read(device, &buff, 1);
+//                        if (bytes <= 0)
+//                            return read_event::error;
+//                        if (buff != 0x3f)
+//                            return read_event::unknown;
+//                        bytes = read(device, &buff, 1);
+//                        if (bytes <= 0)
+//                            return read_event::error;
+//                        if (buff != 0x63)
+//                            return read_event::unknown;
+//                        return read_event::reset;
+//                    }
                 default :
                     {
 //                        std::cout << "\nunexpected symbol: 0x"
