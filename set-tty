@@ -1,3 +1,6 @@
 #!/bin/bash
 
-stty -F /dev/ttyS8 1200
+port="ttyS8"
+baud=9600
+
+stty -F /dev/${port} ${baud}
