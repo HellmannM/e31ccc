@@ -1,0 +1,7 @@
+#!/bin/bash
+
+ls /dev > 00_first_scan
+sleep 5
+ls /dev > 00_second_scan
+diff 00_first_scan 00_second_scan
+rm 00_first_scan 00_second_scan
