@@ -33,7 +33,7 @@ public:
                     }
                 case 0x61 :
                     {
-                        // 617f : power on/off
+                        // 617f 617f: power on/off
                         bytes = read(device, &buff, 1);
                         if (bytes <= 0)
                             return read_event::error;
@@ -66,8 +66,8 @@ public:
                     }
                 case 0x63 :
                     {
-                        // 633f : reset
-                        // 6361 7f : plus
+                        // 633f 633f: reset
+                        // 6361: plus
                         bytes = read(device, &buff, 1);
                         if (bytes <= 0)
                             return read_event::error;
