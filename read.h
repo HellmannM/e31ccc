@@ -48,6 +48,14 @@ public:
                 bytes = read(device, &message, 4);
                 if (bytes != 4)
                     return read_event::error;
+//                // alternative 1
+//                uint8_t m[4];
+//                int b = 4;
+//                while (b != 0)
+//                {
+//                    b -= read(device, m+(b-1), 1);
+//                }
+//                message = *reinterpret_cast<uint32_t*>(m);
                 switch (message)
                 {
                     case v_reset :
