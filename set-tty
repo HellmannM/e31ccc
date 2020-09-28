@@ -1,6 +1,6 @@
 #!/bin/bash
 
-port="ttyS8"
+port="ttyUSB0"
 baud=9600
 
 stty -F /dev/${port} ${baud}

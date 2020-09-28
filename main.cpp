@@ -22,7 +22,7 @@ int main()
     // set SIGINT signal callback
     signal(SIGINT, sigint_handler);
 
-    std::string fd = "/dev/ttyS8";
+    std::string fd = "/dev/ttyUSB0";
     input_stream input(fd);
     event_handler h;
     output_stream output;
