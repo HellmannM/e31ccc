@@ -19,106 +19,60 @@ public:
 
     read_event read_next_sequence()
     {
+        // 0xf0 : start of new message
+        // 0xfc : start of new message
+        // 0x0c1c 701c : reset
+        // 0x1c0c 1c70 : power
+        // 0x1c1c 1c0c : minus
+        // 0x1c1c 1c1c : idle
+        // 0x1c70 0c1c : plus
+
+        constexpr uint32_t v_reset = 0x0c1c701c;
+        constexpr uint32_t v_power = 0x1c0c1c70;
+        constexpr uint32_t v_minus = 0x1c1c1c0c;
+        constexpr uint32_t v_idle  = 0x1c1c1c1c;
+        constexpr uint32_t v_plus  = 0x1c700c1c;
+
         uint8_t buff;
         int bytes = 0;
         bytes = read(device, &buff, 1);
         if (bytes > 0)
         {
-            switch (buff)
+            if (buff == 0xf0 ||
+                buff == 0xfc)
             {
-                case 0x7f :
-                    {
-                        // 0x7f : idle. do nothing
-                        return read_event::noop;
-                    }
-                case 0x61 :
-                    {
-                        // 617f 617f: power on/off
-                        bytes = read(device, &buff, 1);
-                        if (bytes <= 0)
-                            return read_event::error;
-                        if (buff != 0x7f)
-                            return read_event::unknown;
-                        bytes = read(device, &buff, 1);
-                        if (bytes <= 0)
-                            return read_event::error;
-                        if (buff != 0x61)
-                            return read_event::unknown;
-                        bytes = read(device, &buff, 1);
-                        if (bytes <= 0)
-                            return read_event::error;
-                        if (buff != 0x7f)
-                            return read_event::unknown;
+                // 0xf0 : start of new message
+                // 0xfc : start of new message
+                // read next 4 bytes and compare to messages
+                uint32_t message;
+                bytes = read(device, &message, 4);
+                if (bytes != 4)
+                    return read_event::error;
+                switch (message)
+                {
+                    case v_reset :
+                        return read_event::reset;
+                    case v_power :
                         return read_event::power;
-                    }
-                case 0xa3 :
-                    {
-                        // a3a3 a3a3 : minus
-                        for (int i=0; i<3; ++i)
-                        {
-                            bytes = read(device, &buff, 1);
-                            if (bytes <= 0)
-                                return read_event::error;
-                            if (buff != 0xa3)
-                                return read_event::unknown;
-                        }
-                        return read_event::minus;;
-                    }
-                case 0x63 :
-                    {
-                        // 633f 633f: reset
-                        // 6361: plus
-                        bytes = read(device, &buff, 1);
-                        if (bytes <= 0)
-                            return read_event::error;
-                        if (buff == 0x3f)
-                        {
-                            bytes = read(device, &buff, 1);
-                            if (bytes <= 0)
-                                return read_event::error;
-                            if (buff != 0x63)
-                                return read_event::noop;
-                            bytes = read(device, &buff, 1);
-                            if (bytes <= 0)
-                                return read_event::error;
-                            if (buff != 0x3f)
-                                return read_event::noop;
-                            return read_event::reset;
-                        }
-                        else if (buff == 0x61)
-                            return read_event::plus;
+                    case v_minus :
+                        return read_event::minus;
+                    case v_idle :
+                        return read_event::noop;
+                    case v_plus :
+                        return read_event::plus;
+                    default :
                         return read_event::unknown;
-                    }
-//                case 0x3f :
-//                    {
-//                        // 3f63 : reset
-//                        bytes = read(device, &buff, 1);
-//                        if (bytes <= 0)
-//                            return read_event::error;
-//                        if (buff != 0x63)
-//                            return read_event::unknown;
-//                        bytes = read(device, &buff, 1);
-//                        if (bytes <= 0)
-//                            return read_event::error;
-//                        if (buff != 0x3f)
-//                            return read_event::unknown;
-//                        bytes = read(device, &buff, 1);
-//                        if (bytes <= 0)
-//                            return read_event::error;
-//                        if (buff != 0x63)
-//                            return read_event::unknown;
-//                        return read_event::reset;
-//                    }
-                default :
-                    {
-//                        std::cout << "\nunexpected symbol: 0x"
-//                            << std::hex << std::setfill('0') << std::setw(2)
-//                            << (unsigned int) buff << std::endl;
-                        return read_event::unknown;
-                    }
+                }
+            }
+            else
+            {
+                //std::cout << "\nunexpected symbol: 0x"
+                //    << std::hex << std::setfill('0') << std::setw(2)
+                //    << (unsigned int) buff << std::endl;
+                return read_event::unknown;
             }
         }
-        return read_event::error; // should be unreachable
+        return read_event::error;
     }
 
 private:
