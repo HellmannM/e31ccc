@@ -3,4 +3,5 @@
 port="ttyUSB0"
 baud=9600
 
-stty -F /dev/${port} ${baud}
+sudo chmod 666 /dev/ttyUSB0
+sudo stty -F /dev/${port} ${baud}
